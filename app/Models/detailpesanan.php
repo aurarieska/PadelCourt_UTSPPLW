@@ -18,6 +18,12 @@ class DetailPesanan extends Model
         return ['aktif' => 'boolean'];
     }
 
+    // Jam mulai sesi yang tersedia mulai 08:00 sampai 21:00 (satu sesi = 1 jam)
+    public static function jamSesi(): array
+    {
+        return array_map(fn($jam) => sprintf('%02d:00', $jam), range(8, 21));
+    }
+
     public function pesanan(): BelongsTo
     {
         return $this->belongsTo(Pesanan::class, 'id_pesanan', 'id_pesanan');

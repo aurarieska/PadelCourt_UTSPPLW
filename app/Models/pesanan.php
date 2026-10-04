@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,9 +21,17 @@ class Pesanan extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'kode_pesanan', 'id_pengguna', 'nama_pemesan', 'no_telepon_pemesan',
-        'jenis_pesanan', 'tanggal_pesan', 'batas_bayar', 'total_harga',
-        'status_pesanan', 'alasan_batal', 'catatan_batal',
+        'kode_pesanan',
+        'id_pengguna',
+        'nama_pemesan',
+        'no_telepon_pemesan',
+        'jenis_pesanan',
+        'tanggal_pesan',
+        'batas_bayar',
+        'total_harga',
+        'status_pesanan',
+        'alasan_batal',
+        'catatan_batal',
     ];
 
     protected function casts(): array
@@ -46,5 +55,20 @@ class Pesanan extends Model
     public function transaksi(): HasOne
     {
         return $this->hasOne(Transaksi::class, 'id_pesanan', 'id_pesanan');
+    }
+
+    // Waktu berakhirnya sesi paling akhir 
+    public function waktuSelesaiBermain(): ?Carbon
+    {
+        return $this->detail
+            ->map(fn($d) => Carbon::parse($d->tanggal_main . ' ' . $d->jam_mulai)->addHour())
+            ->max();
+    }
+
+    public function sudahBerakhir(): bool
+    {
+        $akhir = $this->waktuSelesaiBermain();
+
+        return $akhir !== null && now()->greaterThanOrEqualTo($akhir);
     }
 }
