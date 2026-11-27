@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\JenisLapangan;
 use App\Models\Lapangan;
 use Illuminate\Database\Seeder;
 
@@ -20,6 +21,7 @@ class LapanganSeeder extends Seeder
                 ['nama_lapangan' => $nama],
                 [
                     'jenis_lapangan' => $jenis,
+                    'id_jenis' => JenisLapangan::where('nama_jenis', ucfirst($jenis))->value('id_jenis'),
                     'harga_per_sesi' => $harga,
                     'deskripsi' => $deskripsi,
                     'status_lapangan' => 'aktif',

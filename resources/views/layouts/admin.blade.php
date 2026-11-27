@@ -22,6 +22,7 @@
         ['Verifikasi', 'admin.verifikasi.index', 'admin.verifikasi.*', 'badge-check'],
         ['Pesanan Walk-in', 'admin.walkin.create', 'admin.walkin.*', 'user-plus'],
         ['Semua Pesanan', 'admin.pesanan.index', 'admin.pesanan.*', 'clipboard-list'],
+        ['Jenis Lapangan', 'admin.jenis-lapangan.index', 'admin.jenis-lapangan.*', 'tags'],
     ];
 @endphp
 

@@ -9,15 +9,18 @@ use Symfony\Component\HttpFoundation\Response;
 class CekRole
 {
     /**
-     * Pemakaian di route: ->middleware('role:admin') atau 'role:pelanggan'.
-     * Pelanggan yang membuka halaman admin akan mendapat 403 (KNF-02).
+     * Pemakaian pada route: role:admin  atau  role:admin,pelanggan
      */
-    public function handle(Request $request, Closure $next, string $role): Response
+    public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        if (! $request->user() || $request->user()->role !== $role) {
-            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+        if (! $request->user()) {
+            return redirect()->route('login'); // Guest dialihkan ke login
         }
 
-        return $next($request);
+        if (in_array($request->user()->role, $roles, true)) {
+            return $next($request);
+        }
+
+        abort(403, 'Akses ditolak.');
     }
 }

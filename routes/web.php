@@ -1,5 +1,7 @@
 <?php
-
+use App\Http\Controllers\Admin\JenisLapanganController;
+use App\Http\Controllers\Admin\VerifikasiController;
+use App\Http\Controllers\RegistrasiController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LapanganController;
 use App\Http\Controllers\Admin\PesananController;
@@ -14,6 +16,8 @@ Route::get('/', [AuthController::class, 'beranda'])->name('beranda');
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'tampilLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.proses');
+    Route::get('/register', [RegistrasiController::class, 'tampil'])->name('register');
+    Route::post('/register', [RegistrasiController::class, 'simpan'])->name('register.proses');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
@@ -36,9 +40,20 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/pesanan', [PesananController::class, 'index'])->name('pesanan.index');
     Route::get('/pesanan/{pesanan}', [PesananController::class, 'show'])->name('pesanan.show');
     Route::patch('/pesanan/{pesanan}/selesai', [PesananController::class, 'selesai'])->name('pesanan.selesai');
+
+     // M1 Jenis Lapangan
+    Route::resource('jenis-lapangan', JenisLapanganController::class)
+        ->except(['show'])
+        ->parameters(['jenis-lapangan' => 'jenis']);
+
+    // T2 Verifikasi pembayaran
+    Route::get('/verifikasi', [VerifikasiController::class, 'index'])->name('verifikasi.index');
+    Route::patch('/verifikasi/{pesanan}/setujui', [VerifikasiController::class, 'setujui'])->name('verifikasi.setujui');
+    Route::patch('/verifikasi/{pesanan}/tolak', [VerifikasiController::class, 'tolak'])->name('verifikasi.tolak');
+
 });
 
-// Area pelanggan 
+// Area pelanggan
 Route::middleware(['auth', 'role:pelanggan'])->group(function () {
     Route::get('/lapangan', [PelangganController::class, 'lapangan'])->name('pelanggan.lapangan');
 });

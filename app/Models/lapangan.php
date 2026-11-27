@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Lapangan extends Model
@@ -14,7 +15,7 @@ class Lapangan extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'nama_lapangan', 'jenis_lapangan', 'harga_per_sesi',
+        'nama_lapangan', 'jenis_lapangan', 'id_jenis', 'harga_per_sesi',
         'deskripsi', 'foto', 'status_lapangan',
     ];
 
@@ -29,6 +30,11 @@ class Lapangan extends Model
         return Attribute::get(
             fn () => $this->foto ? asset('storage/lapangan/' . $this->foto) : null
         );
+    }
+
+    public function jenis(): BelongsTo
+    {
+        return $this->belongsTo(JenisLapangan::class, 'id_jenis', 'id_jenis');
     }
 
     public function detailPesanan(): HasMany

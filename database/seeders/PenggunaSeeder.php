@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Pengguna;
+use App\Models\Role;
 use Illuminate\Database\Seeder;
 
 class PenggunaSeeder extends Seeder
@@ -20,9 +21,9 @@ class PenggunaSeeder extends Seeder
                 ['email' => $email],
                 [
                     'nama_pengguna' => $nama,
-                    'password' => $password, // di-hash otomatis oleh cast 'hashed' pada model
+                    'password' => $password, // di-hash otomatis oleh cast 'hashed'
                     'no_telepon' => $telepon,
-                    'role' => $role,
+                    'id_role' => Role::where('nama_role', $role)->value('id_role'),
                 ]
             );
         }
