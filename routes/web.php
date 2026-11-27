@@ -1,3 +1,4 @@
+
 <?php
 
 use App\Http\Controllers\Admin\JenisLapanganController;
@@ -9,21 +10,21 @@ use App\Http\Controllers\Admin\PesananController;
 use App\Http\Controllers\Admin\WalkInController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PelangganController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KatalogController;
 use App\Http\Controllers\Pelanggan\DashboardController as PelangganDashboardController;
 use App\Http\Controllers\Pelanggan\KeranjangController;
 use App\Http\Controllers\Pelanggan\PemesananController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     if (auth()->check() && auth()->user()->isAdmin()) {
         return redirect()->route('admin.dashboard');
     }
 
-    return redirect()->route('katalog.index'); // Guest dan pelanggan melihat katalog
+    return redirect()->route('katalog.index');
 })->name('beranda');
 
-// Pengguna yang belum login hanya bisa membuka halaman login
+// Pengguna yang belum login
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'tampilLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.proses');
@@ -31,8 +32,11 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [RegistrasiController::class, 'simpan'])->name('register.proses');
 });
 
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
 
+// Katalog
 Route::get('/katalog', [KatalogController::class, 'index'])->name('katalog.index');
 Route::get('/katalog/{lapangan}', [KatalogController::class, 'show'])->name('katalog.show');
 
@@ -70,6 +74,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 Route::middleware(['auth', 'role:pelanggan'])->group(function () {
     Route::get('/lapangan', [PelangganController::class, 'lapangan'])->name('pelanggan.lapangan');
 });
+
 Route::middleware(['auth', 'role:pelanggan'])->name('pelanggan.')->group(function () {
     Route::get('/akun', [PelangganDashboardController::class, 'index'])->name('dashboard');
 

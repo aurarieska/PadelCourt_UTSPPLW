@@ -41,13 +41,16 @@
                     autocomplete="{{ ['nama_pengguna' => 'name', 'email' => 'email', 'no_telepon' => 'tel', 'password' => 'new-password', 'password_confirmation' => 'new-password'][$name] }}"
                     value="{{ $type === 'password' ? '' : old($name) }}"
                     class="mt-1 w-full rounded-xl border bg-slate-50 px-4 py-3 text-sm outline-none focus:border-teal-600 {{ $errors->has($name) ? 'border-red-500' : 'border-slate-200' }}">
+
                 @error($name)
                 <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                 @enderror
             </div>
             @endforeach
 
-            <button type="submit" class="w-full rounded-xl bg-teal-700 py-3 text-sm font-semibold text-white hover:bg-teal-800">Daftar</button>
+            <button type="submit" class="w-full rounded-xl bg-teal-700 py-3 text-sm font-semibold text-white hover:bg-teal-800">
+                Daftar
+            </button>
         </form>
 
         <p class="mt-5 text-center text-sm text-slate-500">

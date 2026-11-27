@@ -1,3 +1,4 @@
+
 <?php
 
 namespace App\Models;
@@ -28,7 +29,7 @@ class Lapangan extends Model
         return $query->where('status_lapangan', 'aktif');
     }
 
-    // Pemakaian di view: $lapangan->foto_url (null kalau fotonya belum ada)
+    // Pemakaian di view: $lapangan->foto_url
     protected function fotoUrl(): Attribute
     {
         return Attribute::get(
@@ -36,7 +37,7 @@ class Lapangan extends Model
         );
     }
 
-    // Kompatibilitas: view lama yang membaca $lapangan->jenis_lapangan tetap mendapat 'indoor' / 'outdoor' dst.
+    // Kompatibilitas dengan view lama
     protected function jenisLapangan(): Attribute
     {
         return Attribute::get(fn() => $this->jenis ? strtolower($this->jenis->nama_jenis) : null);
