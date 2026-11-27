@@ -12,7 +12,7 @@ class RegistrasiController extends Controller
 {
     public function tampil(): View
     {
-        return view('auth.register');
+        return view('admin.auth.register');
     }
 
     public function simpan(Request $request): RedirectResponse

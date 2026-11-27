@@ -15,8 +15,12 @@ class Lapangan extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'nama_lapangan', 'jenis_lapangan', 'id_jenis', 'harga_per_sesi',
-        'deskripsi', 'foto', 'status_lapangan',
+        'nama_lapangan',
+        'id_jenis',
+        'harga_per_sesi',
+        'deskripsi',
+        'foto',
+        'status_lapangan',
     ];
 
     public function scopeAktif(Builder $query): Builder
@@ -28,8 +32,14 @@ class Lapangan extends Model
     protected function fotoUrl(): Attribute
     {
         return Attribute::get(
-            fn () => $this->foto ? asset('storage/lapangan/' . $this->foto) : null
+            fn() => $this->foto ? asset('storage/lapangan/' . $this->foto) : null
         );
+    }
+
+    // Kompatibilitas: view lama yang membaca $lapangan->jenis_lapangan tetap mendapat 'indoor' / 'outdoor' dst.
+    protected function jenisLapangan(): Attribute
+    {
+        return Attribute::get(fn() => $this->jenis ? strtolower($this->jenis->nama_jenis) : null);
     }
 
     public function jenis(): BelongsTo

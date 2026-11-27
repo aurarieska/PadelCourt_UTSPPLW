@@ -49,7 +49,7 @@ class AuthController extends Controller
 
         return $pengguna->isAdmin()
             ? redirect()->route('admin.dashboard')
-            : redirect()->route('pelanggan.lapangan');
+            : redirect()->route('pelanggan.dashboard');
     }
 
     public function logout(Request $request): RedirectResponse

@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\Admin\JenisLapanganController;
 use App\Http\Controllers\Admin\VerifikasiController;
 use App\Http\Controllers\RegistrasiController;
@@ -9,8 +10,18 @@ use App\Http\Controllers\Admin\WalkInController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PelangganController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\KatalogController;
+use App\Http\Controllers\Pelanggan\DashboardController as PelangganDashboardController;
+use App\Http\Controllers\Pelanggan\KeranjangController;
+use App\Http\Controllers\Pelanggan\PemesananController;
 
-Route::get('/', [AuthController::class, 'beranda'])->name('beranda');
+Route::get('/', function () {
+    if (auth()->check() && auth()->user()->isAdmin()) {
+        return redirect()->route('admin.dashboard');
+    }
+
+    return redirect()->route('katalog.index'); // Guest dan pelanggan melihat katalog
+})->name('beranda');
 
 // Pengguna yang belum login hanya bisa membuka halaman login
 Route::middleware('guest')->group(function () {
@@ -21,6 +32,9 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+Route::get('/katalog', [KatalogController::class, 'index'])->name('katalog.index');
+Route::get('/katalog/{lapangan}', [KatalogController::class, 'show'])->name('katalog.show');
 
 // Area admin
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -41,7 +55,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/pesanan/{pesanan}', [PesananController::class, 'show'])->name('pesanan.show');
     Route::patch('/pesanan/{pesanan}/selesai', [PesananController::class, 'selesai'])->name('pesanan.selesai');
 
-     // M1 Jenis Lapangan
+    // M1 Jenis Lapangan
     Route::resource('jenis-lapangan', JenisLapanganController::class)
         ->except(['show'])
         ->parameters(['jenis-lapangan' => 'jenis']);
@@ -50,10 +64,22 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/verifikasi', [VerifikasiController::class, 'index'])->name('verifikasi.index');
     Route::patch('/verifikasi/{pesanan}/setujui', [VerifikasiController::class, 'setujui'])->name('verifikasi.setujui');
     Route::patch('/verifikasi/{pesanan}/tolak', [VerifikasiController::class, 'tolak'])->name('verifikasi.tolak');
-
 });
 
 // Area pelanggan
 Route::middleware(['auth', 'role:pelanggan'])->group(function () {
     Route::get('/lapangan', [PelangganController::class, 'lapangan'])->name('pelanggan.lapangan');
+});
+Route::middleware(['auth', 'role:pelanggan'])->name('pelanggan.')->group(function () {
+    Route::get('/akun', [PelangganDashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('/keranjang', [KeranjangController::class, 'index'])->name('keranjang.index');
+    Route::post('/keranjang', [KeranjangController::class, 'store'])->name('keranjang.store');
+    Route::delete('/keranjang/{keranjang}', [KeranjangController::class, 'destroy'])->name('keranjang.destroy');
+
+    Route::post('/checkout', [PemesananController::class, 'checkout'])->name('checkout');
+    Route::get('/pesanan-saya', [PemesananController::class, 'index'])->name('pesanan.index');
+    Route::get('/pesanan-saya/{pesanan}', [PemesananController::class, 'show'])->name('pesanan.show');
+    Route::post('/pesanan-saya/{pesanan}/bayar', [PemesananController::class, 'bayar'])->name('pesanan.bayar');
+    Route::patch('/pesanan-saya/{pesanan}/batal', [PemesananController::class, 'batal'])->name('pesanan.batal');
 });
