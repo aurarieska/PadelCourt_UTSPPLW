@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LapanganRequest;
+use App\Models\JenisLapangan;
 use App\Models\Lapangan;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
@@ -13,22 +14,25 @@ use Illuminate\View\View;
 
 class LapanganController extends Controller
 {
-    // Daftar lapangan + pencarian nama (ILIKE = tidak case sensitive di PostgreSQL)
+    // Daftar lapangan + pencarian nama (ILIKE = tidak case sensitive di PostgreSQL) + pagination
     public function index(Request $request): View
     {
         $cari = trim((string) $request->query('cari', ''));
 
-        $lapangan = Lapangan::query()
-            ->when($cari !== '', fn ($q) => $q->where('nama_lapangan', 'ilike', "%{$cari}%"))
+        $lapangan = Lapangan::with('jenis')
+            ->when($cari !== '', fn($q) => $q->where('nama_lapangan', 'ilike', "%{$cari}%"))
             ->orderBy('id_lapangan')
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
         return view('admin.lapangan.index', compact('lapangan', 'cari'));
     }
 
     public function create(): View
     {
-        return view('admin.lapangan.create');
+        $daftarJenis = JenisLapangan::orderBy('nama_jenis')->get();
+
+        return view('admin.lapangan.create', compact('daftarJenis'));
     }
 
     public function store(LapanganRequest $request): RedirectResponse
@@ -41,7 +45,9 @@ class LapanganController extends Controller
 
     public function edit(Lapangan $lapangan): View
     {
-        return view('admin.lapangan.edit', compact('lapangan'));
+        $daftarJenis = JenisLapangan::orderBy('nama_jenis')->get();
+
+        return view('admin.lapangan.edit', compact('lapangan', 'daftarJenis'));
     }
 
     public function update(LapanganRequest $request, Lapangan $lapangan): RedirectResponse
@@ -87,7 +93,7 @@ class LapanganController extends Controller
     {
         $data = [
             'nama_lapangan' => $request->input('nama_lapangan'),
-            'jenis_lapangan' => $request->input('jenis_lapangan'),
+            'id_jenis' => (int) $request->input('id_jenis'),
             'harga_per_sesi' => (int) $request->input('harga_per_sesi'),
             'deskripsi' => $request->input('deskripsi'),
             'status_lapangan' => $request->boolean('aktif') ? 'aktif' : 'nonaktif',

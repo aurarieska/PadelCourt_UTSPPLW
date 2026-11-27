@@ -23,7 +23,7 @@ class LapanganRequest extends FormRequest
     {
         return [
             'nama_lapangan' => ['required', 'string', 'max:100'],
-            'jenis_lapangan' => ['required', 'in:indoor,outdoor'],
+            'id_jenis' => ['required', 'integer', 'exists:jenis_lapangan,id_jenis'],
             'deskripsi' => ['nullable', 'string'],
             'harga_per_sesi' => ['required', 'integer', 'min:1', 'max:99999999'],
             'foto' => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:5120'], // 5 MB
@@ -35,8 +35,8 @@ class LapanganRequest extends FormRequest
         return [
             'nama_lapangan.required' => 'Nama lapangan wajib diisi.',
             'nama_lapangan.max' => 'Nama lapangan maksimal 100 karakter.',
-            'jenis_lapangan.required' => 'Tipe lapangan wajib dipilih.',
-            'jenis_lapangan.in' => 'Tipe lapangan harus indoor atau outdoor.',
+            'id_jenis.required' => 'Jenis lapangan wajib dipilih.',
+            'id_jenis.exists' => 'Jenis lapangan tidak valid.',
             'harga_per_sesi.required' => 'Harga per sesi wajib diisi.',
             'harga_per_sesi.integer' => 'Harga per sesi harus berupa angka.',
             'harga_per_sesi.min' => 'Harga per sesi harus lebih dari 0.',
